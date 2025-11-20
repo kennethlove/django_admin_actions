@@ -72,7 +72,7 @@ def test_condition_failure_excludes_records(
     r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
 
     queue_action = QueueCeleryAction(task=celery_task, condition=lambda _: False)
-    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=instance.pk))
+    queue_action(admin, r, AdminActionsTestModel.objects.all())
 
     # Every record was rejected, task should never be delayed
     mocked_task.assert_not_called()
@@ -86,7 +86,7 @@ def test_condition_result_determines_record_inclusion(
     model_instance,
     _request,
 ):
-    """The Admin should have a sample_task action"""
+    """The condition should include and exclude appropriately."""
     instance = model_instance()
     r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
     model_instance()  # A second instance that should be excluded
@@ -95,7 +95,7 @@ def test_condition_result_determines_record_inclusion(
         return record.pk == instance.pk
 
     queue_action = QueueCeleryAction(task=celery_task, condition=condition)
-    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=instance.pk))
+    queue_action(admin, r, AdminActionsTestModel.objects.all())
 
     # The record met the condition, task should be delayed
     mocked_task.assert_called_once_with(instance.pk)
