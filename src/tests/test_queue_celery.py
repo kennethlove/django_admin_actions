@@ -99,3 +99,9 @@ def test_condition_result_determines_record_inclusion(
 
     # The record met the condition, task should be delayed
     mocked_task.assert_called_once_with(instance.pk)
+
+
+def test_noncallable_condition_raises(celery_task):
+    """Providing a non-callable condition should raise an error."""
+    with pytest.raises(TypeError):
+        QueueCeleryAction(task=celery_task, condition="not_a_function")  # pyright: ignore[reportArgumentType]
