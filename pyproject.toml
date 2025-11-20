@@ -13,7 +13,6 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "django<=4.2",
-    "admin_actions",
 ]
 
 [project.optional-dependencies]
@@ -27,7 +26,7 @@ addopts = "--randomly-seed=last --cov=admin_actions --cov-report=term-missing"
 django_find_project = false
 DJANGO_SETTINGS_MODULE = "tests.settings"
 testpaths = [
-    "tests",
+    "src/tests",
 ]
 
 [dependency-groups]
