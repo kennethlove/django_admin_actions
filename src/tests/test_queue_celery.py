@@ -50,12 +50,13 @@ def test_generated_action_is_callable(
     _request,
 ):
     """The Admin should have a sample_task action"""
-    r = _request("post", data={ACTION_CHECKBOX_NAME: [model_instance.pk]})
+    instance = model_instance()
+    r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
 
     queue_action = QueueCeleryAction(task=celery_task)
-    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=model_instance.pk))
+    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=instance.pk))
 
-    mocked_task.assert_called_once_with(model_instance.pk)
+    mocked_task.assert_called_once_with(instance.pk)
 
 
 @pytest.mark.django_db
@@ -67,10 +68,34 @@ def test_condition_failure_excludes_records(
     _request,
 ):
     """The Admin should have a sample_task action"""
-    r = _request("post", data={ACTION_CHECKBOX_NAME: [model_instance.pk]})
+    instance = model_instance()
+    r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
 
     queue_action = QueueCeleryAction(task=celery_task, condition=lambda _: False)
-    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=model_instance.pk))
+    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=instance.pk))
 
     # Every record was rejected, task should never be delayed
     mocked_task.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_condition_result_determines_record_inclusion(
+    admin,
+    mocked_task,
+    celery_task,
+    model_instance,
+    _request,
+):
+    """The Admin should have a sample_task action"""
+    instance = model_instance()
+    r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
+    model_instance()  # A second instance that should be excluded
+
+    def condition(record):
+        return record.pk == instance.pk
+
+    queue_action = QueueCeleryAction(task=celery_task, condition=condition)
+    queue_action(admin, r, AdminActionsTestModel.objects.filter(pk=instance.pk))
+
+    # The record met the condition, task should be delayed
+    mocked_task.assert_called_once_with(instance.pk)

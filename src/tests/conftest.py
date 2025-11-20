@@ -33,8 +33,11 @@ def admin(admin_site):
 
 
 @pytest.fixture
-def model_instance(faker):
-    return AdminActionsTestModel.objects.create(name=faker.word())
+def model_instance(db, faker):
+    def _create_instance():
+        return AdminActionsTestModel.objects.create(name=faker.word())
+
+    return _create_instance
 
 
 @pytest.fixture
