@@ -5,13 +5,21 @@ from admin_actions.lib import AdminActionBaseClass
 from tests._app.models import AdminActionsTestModel
 
 
+class _AdminAction(AdminActionBaseClass):
+    """A concrete implementation of AdminActionBaseClass for testing."""
+
+    def handle_item(self, item):
+        """Calls the provided function with the item's primary key."""
+        self.function(item.pk)
+
+
 def test_generated_action_is_registrable(admin, rf, admin_user, mock_function):
     """The Admin should have an action that includes `empty_function`."""
 
     r = rf.get("/")
     r.user = admin_user
 
-    queue_action = AdminActionBaseClass(mock_function)
+    queue_action = _AdminAction(mock_function)
     admin.actions += (queue_action,)
 
     actions = admin.get_actions(r)
@@ -27,7 +35,7 @@ def test_generated_action_is_nameable(admin, rf, admin_user):
     r = rf.get("/")
     r.user = admin_user
 
-    queue_action = AdminActionBaseClass(lambda _: ..., name="custom_action_name")
+    queue_action = _AdminAction(lambda _: ..., name="custom_action_name")
     admin.actions += (queue_action,)
 
     actions = admin.get_actions(r)
@@ -49,7 +57,7 @@ def test_generated_action_is_callable(
     instance = model_instance()
     r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
 
-    queue_action = AdminActionBaseClass(mock_function)
+    queue_action = _AdminAction(mock_function)
     queue_action(admin, r, AdminActionsTestModel.objects.all())
 
     mock_function.assert_called_once_with(instance.pk)
@@ -66,7 +74,7 @@ def test_condition_failure_excludes_records(
     instance = model_instance()
     r = _request("post", data={ACTION_CHECKBOX_NAME: [instance.pk]})
 
-    queue_action = AdminActionBaseClass(mock_function, condition=lambda _: False)
+    queue_action = _AdminAction(mock_function, condition=lambda _: False)
     queue_action(admin, r, AdminActionsTestModel.objects.all())
 
     # Every record was rejected, task should never be delayed
@@ -88,7 +96,7 @@ def test_condition_result_determines_record_inclusion(
     def condition(record):
         return record.pk == instance.pk
 
-    queue_action = AdminActionBaseClass(mock_function, condition=condition)
+    queue_action = _AdminAction(mock_function, condition=condition)
     queue_action(admin, r, AdminActionsTestModel.objects.all())
 
     # The record met the condition, task should be delayed
@@ -98,10 +106,10 @@ def test_condition_result_determines_record_inclusion(
 def test_noncallable_condition_raises():
     """Providing a non-callable condition should raise an error."""
     with pytest.raises(TypeError):
-        AdminActionBaseClass(lambda _: ..., condition="not_a_function")  # pyright: ignore[reportArgumentType]
+        _AdminAction(lambda _: ..., condition="not_a_function")  # pyright: ignore[reportArgumentType]
 
 
 def test_noncallable_function_raises():
     """Providing a non-callable function should raise an error."""
     with pytest.raises(TypeError):
-        AdminActionBaseClass("not_a_function")  # pyright: ignore[reportArgumentType]
+        _AdminAction("not_a_function")  # pyright: ignore[reportArgumentType]

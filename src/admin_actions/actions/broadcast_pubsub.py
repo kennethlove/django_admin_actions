@@ -23,6 +23,10 @@ class BroadcastPubSubAction(AdminActionBaseClass):
             model = MyModel
     """
 
+    def handle_item(self, item):
+        """Handles a single item from the queryset."""
+        self.function(item.pk)
+
     def __init__(
         self,
         function: FunctionType,

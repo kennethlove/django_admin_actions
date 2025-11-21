@@ -1,3 +1,4 @@
+import abc
 from collections.abc import Callable
 from types import FunctionType
 from typing import Any, TypeAlias
@@ -10,7 +11,7 @@ from django.http import HttpRequest
 Condition: TypeAlias = Callable[[Any], bool]  # Condition to enable the action
 
 
-class AdminActionBaseClass:
+class AdminActionBaseClass(abc.ABC):
     """Generates an admin action for calling a function for a chosen set of records.
 
     Yes, it's basically an abstracted `map`.
@@ -42,8 +43,9 @@ class AdminActionBaseClass:
     function will be used instead.
     """
 
+    @abc.abstractmethod
     def handle_item(self, item):
-        self.function(item.pk)
+        """Handles a single item from the queryset."""
 
     def __call__(
         self, modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet
@@ -90,10 +92,5 @@ class AdminActionBaseClass:
 
         self.name = name
         self.function = function
+        self.__name__ = name if name else function.__name__
 
-    @property
-    def __name__(self) -> str:
-        """Returns the name of the action."""
-        if self.name:
-            return self.name
-        return self.function.__name__
