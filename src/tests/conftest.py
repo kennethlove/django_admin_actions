@@ -7,18 +7,19 @@ from ._app.admin import AdminActionsTestModelAdmin
 from ._app.models import AdminActionsTestModel
 
 
-@pytest.fixture(scope="session")
-def celery_enable_logging():
-    return True
+@pytest.fixture
+def mock_function():
+    def _empty_function(*args, **kwargs):
+        """A no-op function for testing purposes."""
+        pass
 
-
-@pytest.fixture(scope="session")
-def celery_config():
-    return {
-        "broker_url": "memory://",
-        "result_backend": "rpc://",
-        "task_always_eager": True,
-    }
+    with mock.patch.object(
+        _empty_function,
+        "__call__",
+        wraps=_empty_function.__call__,
+        __name__="empty_function",
+    ) as mock_fn:
+        yield mock_fn
 
 
 @pytest.fixture
@@ -37,21 +38,6 @@ def model_instance(db, faker):
         return AdminActionsTestModel.objects.create(name=faker.word())
 
     return _create_instance
-
-
-@pytest.fixture
-def celery_task(celery_session_app):
-    @celery_session_app.task
-    def sample_task(_):  # Must take a single argument
-        ...
-
-    return sample_task
-
-
-@pytest.fixture
-def mocked_task(celery_task):
-    with mock.patch.object(celery_task, "delay", wraps=celery_task.delay) as mock_delay:
-        yield mock_delay
 
 
 @pytest.fixture(name="_request")
