@@ -1,7 +1,19 @@
+"""Admin action for queuing Celery tasks for selected records.
+
+Requires Celery to be installed.
+You can install it with: pip install admin-actions[celery]
+"""
+
 from types import FunctionType
 from typing import TypeAlias
 
-import celery
+try:
+    import celery
+except ImportError as e:
+    raise ImportError(
+        "Celery integration requires celery to be installed. "
+        "Install it with: pip install admin-actions[celery]"
+    ) from e
 
 from admin_actions.lib import AdminActionBaseClass, Condition
 
