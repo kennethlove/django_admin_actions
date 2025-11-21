@@ -1,5 +1,3 @@
-from unittest import mock
-
 import pytest
 from django.contrib.admin.helpers import ACTION_CHECKBOX_NAME
 
