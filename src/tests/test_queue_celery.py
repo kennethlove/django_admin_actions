@@ -66,3 +66,11 @@ def test_non_celery_task_raises():
 
     with pytest.raises(TypeError):
         QueueCeleryAction(task=not_a_celery_task)  # pyright: ignore[reportArgumentType]
+
+
+@mock.patch("admin_actions.actions.find_spec", return_value=None)
+def test_celery_not_available_raises(_mock_find_spec):
+    """Celery not being installed should raise an ImportError."""
+
+    with pytest.raises(ImportError):
+        from admin_actions.actions import QueueCeleryAction  # noqa: F401
