@@ -344,6 +344,7 @@ build = [
     { name = "hatchling" },
 ]
 dev = [
+    { name = "alabaster" },
     { name = "celery-types" },
     { name = "django-stubs" },
     { name = "faker" },
@@ -352,6 +353,12 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "pytest-randomly" },
+    { name = "sphinx" },
+    { name = "sphinx-autobuild" },
+    { name = "sphinx-autodoc-typehints" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-notfound-page" },
+    { name = "sphinx-tabs" },
 ]
 docs = [
     { name = "alabaster" },
@@ -361,6 +368,18 @@ docs = [
     { name = "sphinx-copybutton" },
     { name = "sphinx-notfound-page" },
     { name = "sphinx-tabs" },
+]
+test = [
+    { name = "faker" },
+    { name = "pytest" },
+    { name = "pytest-celery" },
+    { name = "pytest-cov" },
+    { name = "pytest-django" },
+    { name = "pytest-randomly" },
+]
+types = [
+    { name = "celery-types" },
+    { name = "django-stubs" },
 ]
 
 [package.metadata]
@@ -373,6 +392,7 @@ provides-extras = ["celery"]
 [package.metadata.requires-dev]
 build = [{ name = "hatchling", specifier = ">=1.28.0" }]
 dev = [
+    { name = "alabaster", specifier = ">=1.0" },
     { name = "celery-types", specifier = "==0.23.0" },
     { name = "django-stubs", specifier = ">=5.2.8" },
     { name = "faker", specifier = ">=38.2.0" },
@@ -381,6 +401,12 @@ dev = [
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-django", specifier = ">=4.11.1" },
     { name = "pytest-randomly", specifier = ">=4.0.1" },
+    { name = "sphinx", specifier = ">=8.2.3" },
+    { name = "sphinx-autobuild", specifier = ">=2025.8.25" },
+    { name = "sphinx-autodoc-typehints", specifier = ">=3.5.2" },
+    { name = "sphinx-copybutton", specifier = ">=0.5.2" },
+    { name = "sphinx-notfound-page", specifier = ">=1.1.0" },
+    { name = "sphinx-tabs", specifier = ">=3.4.7" },
 ]
 docs = [
     { name = "alabaster", specifier = ">=1.0" },
@@ -390,6 +416,18 @@ docs = [
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
     { name = "sphinx-notfound-page", specifier = ">=1.1.0" },
     { name = "sphinx-tabs", specifier = ">=3.4.7" },
+]
+test = [
+    { name = "faker", specifier = ">=38.2.0" },
+    { name = "pytest", specifier = ">=9.0.1" },
+    { name = "pytest-celery", specifier = ">=1.2.1" },
+    { name = "pytest-cov", specifier = ">=7.0.0" },
+    { name = "pytest-django", specifier = ">=4.11.1" },
+    { name = "pytest-randomly", specifier = ">=4.0.1" },
+]
+types = [
+    { name = "celery-types", specifier = "==0.23.0" },
+    { name = "django-stubs", specifier = ">=5.2.8" },
 ]
 
 [[package]]
